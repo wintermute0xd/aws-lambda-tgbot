@@ -1,0 +1,65 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Pipeline to deploy on AWS Lambda
+env:
+  S3_BUCKET_NAME : "aws-lambda-tgbot-code"
+  LAMBDA_NAME       : "aws-lambda-tgbot"
+  EB_ENVIRONMENT_NAME       : "MyFlask-env"
+  DEPLOY_PACKAGE_NAME       : "lambda-tgbot${{ github.sha }}.zip"
+  AWS_REGION_NAME           : "eu-central-1"
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # workflow contains jobs
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+      
+      - name: Create ZIP deployment package
+        run : zip -r ${{ env.DEPLOY_PACKAGE_NAME }} ./ -x *.git*
+
+      - name: Configure my AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id    :  ${{ secrets.AWS_USER_ID }}
+          aws-secret-access-key:  ${{ secrets.AWS_USER_KEY }}
+          aws-region           :  ${{ env.AWS_REGION_NAME }}
+        
+      - name: Copy Deployment package to S3 bucket
+        run : aws s3 cp ${{ env.DEPLOY_PACKAGE_NAME }}  s3://${{ env.S3_BUCKET_NAME }}/
+    
+      - name: Print Happy Message for CI finish
+        run : echo "CI Pipeline part Finished successfully!"
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [build]
+
+    steps:
+    - name: Configure my AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id    :  ${{ secrets.AWS_USER_ID }}
+        aws-secret-access-key:  ${{ secrets.AWS_USER_KEY }}
+        aws-region           :  ${{ env.AWS_REGION_NAME }}
+    
+    - name: Upload new code to lambda
+      run : |
+        aws lambda update-function-code --function-name ${{ env.LAMBDA_NAME }} --s3-bucket {{ env.S3_BUCKET_NAME }} --s3-key {{ env.DEPLOY_PACKAGE_NAME }}
+      
+    - name: Print Happy Message for CD finish
+      run : echo "CD Pipeline part Finished successfully!"
