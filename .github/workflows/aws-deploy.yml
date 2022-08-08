@@ -59,7 +59,7 @@ jobs:
     
     - name: Upload new code to lambda
       run : |
-        aws lambda update-function-code --function-name ${{ env.LAMBDA_NAME }} --s3-bucket {{ env.S3_BUCKET_NAME }} --s3-key {{ env.DEPLOY_PACKAGE_NAME }}
+        aws lambda update-function-code --function-name ${{ env.LAMBDA_NAME }} --s3-bucket ${{ env.S3_BUCKET_NAME }} --s3-key ${{ env.DEPLOY_PACKAGE_NAME }}
       
     - name: Print Happy Message for CD finish
       run : echo "CD Pipeline part Finished successfully!"

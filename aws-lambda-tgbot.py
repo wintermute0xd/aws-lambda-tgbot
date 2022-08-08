@@ -11,5 +11,5 @@ def lambda_handler(event, context):
     # return True
 
     with open("file", "rb") as f:
-        f.write = "test123"
-        s3.upload_fileobj(f, "vedro-0", "test-lambda.txt")
+        f.write = "newtest"
+        s3.upload_fileobj(f, "vedro-0", "test-lambda1.txt")
