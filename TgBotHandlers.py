@@ -1,5 +1,3 @@
-from abc import update_abstractmethods
-from ast import Pass
 import requests
 import datetime
 import logging
@@ -17,9 +15,22 @@ Can get updates from Telegram API and make response in depends of chat text mess
 class TgBotHandler:
     def __init__(self, update):
         self.chat_id = update['message']['chat']['id']
+        self.get_botinfo()
 
-    def send_message(self):
+
+    def star_handler(self):
+        text = 'Hello from AWS Lambda'
+        self.send_message(text)
+
+    def send_message(self, text):
+        print('send-start')
         method = 'sendMessage'
-        params = {'chat_id': self.chat_id, 'text': 'Hello'}
+        params = {'chat_id': self.chat_id, 'text': text}
+        print(self.chat_id)
         resp = requests.post(TG_URL + method, params)
         return resp
+
+    def get_botinfo(self):
+        method = 'getMe'
+        botinfo = requests.post(TG_URL + method)
+        print(botinfo)
