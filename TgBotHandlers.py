@@ -4,6 +4,8 @@ import logging
 import json
 import os
 
+import DynamoDBHandler
+
 BOT_TOKEN = os.environ['BOT_TOKEN']
 
 TG_URL = 'https://api.telegram.org/bot' + BOT_TOKEN + '/'
@@ -19,10 +21,11 @@ class TgBotHandler:
 
 
     def start_handler(self):
-        text = 'Hello from AWS Lambda'
-        self.send_message(self, text)
+        text = DynamoDBHandler.read_db('en')
+        #text = 'Hello from AWS Lambda'
+        self.send_message(text)
 
-    def send_message(text):
+    def send_message(self, text):
         print('send-start')
         method = 'sendMessage'
         params = {'chat_id': self.chat_id, 'text': text}

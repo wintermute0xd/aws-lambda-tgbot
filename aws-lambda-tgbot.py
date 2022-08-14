@@ -18,6 +18,5 @@ def lambda_handler(event, context):
         if command == '/start':
             bot.start_handler()
 
-
     return {'statusCode': 200}
 
