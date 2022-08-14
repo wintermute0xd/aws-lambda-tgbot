@@ -18,11 +18,11 @@ class TgBotHandler:
         self.get_botinfo()
 
 
-    def star_handler(self):
+    def start_handler(self):
         text = 'Hello from AWS Lambda'
-        self.send_message(text)
+        self.send_message(self, text)
 
-    def send_message(self, text):
+    def send_message(text):
         print('send-start')
         method = 'sendMessage'
         params = {'chat_id': self.chat_id, 'text': text}

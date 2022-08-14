@@ -13,12 +13,10 @@ def lambda_handler(event, context):
 
     bot = TgBotHandlers.TgBotHandler(update)
     print(update)
-    if is_command(update):
+    if is_command(update['message']):
         command = update['message']['text']
         if command == '/start':
             bot.start_handler()
-
-    print(bot.send_message())
 
 
     return {'statusCode': 200}
